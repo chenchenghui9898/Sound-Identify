@@ -1,0 +1,5 @@
+{
+  "name": "Virtual Piano",
+  "description": "A beautiful interactive piano keyboard with 14 white keys and 10 black keys.",
+  "requestFramePermissions": []
+}
