@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "motion/react";
 import { Music, Volume2, Target, Trophy, Play, Pause, RotateCcw } from "lucide-react";
 import { useRef, useEffect, useState, useMemo } from "react";
+import windFromGrass from "./assets/wind_from_grass.mp3";
 
 const WHITE_KEYS = [
   "C4", "D4", "E4", "F4", "G4", "A4", "B4",
@@ -214,7 +215,7 @@ export default function App() {
     <div className="min-h-screen bg-stone-100 flex flex-col items-center justify-start md:justify-center p-4 md:p-8 font-sans select-none overflow-x-hidden">
       <audio 
         ref={songAudioRef} 
-        src="/wind_from_grass.mp3" 
+        src={windFromGrass} 
         onTimeUpdate={onTimeUpdate} 
         onEnded={onSongEnded}
       />
