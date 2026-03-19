@@ -211,7 +211,7 @@ export default function App() {
   }, [currentTime]);
 
   return (
-    <div className="min-h-screen bg-stone-100 flex flex-col items-center justify-center p-8 font-sans select-none">
+    <div className="min-h-screen bg-stone-100 flex flex-col items-center justify-start md:justify-center p-4 md:p-8 font-sans select-none overflow-x-hidden">
       <audio 
         ref={songAudioRef} 
         src="/wind_from_grass.mp3" 
@@ -245,15 +245,15 @@ export default function App() {
       </div>
 
       {/* Lyrics & Assessment Display */}
-      <div className="mb-10 w-full max-w-2xl bg-white p-8 rounded-3xl shadow-xl border border-stone-200 flex flex-col items-center gap-6 relative overflow-hidden min-h-[240px] justify-center">
+      <div className="mb-6 md:mb-10 w-full max-w-2xl bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-stone-200 flex flex-col items-center gap-6 relative overflow-hidden min-h-[200px] md:min-h-[240px] justify-center">
         <div className={`absolute top-0 left-0 w-2 h-full transition-colors duration-500 ${isAssessmentMode ? 'bg-amber-500' : 'bg-stone-800'}`}></div>
         
         {!isAssessmentMode ? (
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-4 w-full">
             <div className="flex items-center gap-3 text-stone-400 uppercase tracking-[0.2em] text-[10px] font-bold">
               <Music className="w-4 h-4" /> Now Singing
             </div>
-            <div className="text-3xl md:text-4xl font-serif italic text-stone-800 text-center leading-tight flex flex-wrap justify-center gap-x-2">
+            <div className="text-2xl md:text-4xl font-serif italic text-stone-800 text-center leading-tight flex flex-wrap justify-center gap-x-2 gap-y-1 px-2">
               {currentLine.text.split(" ").map((part, pIdx) => (
                 <span key={pIdx} className="flex">
                   {part.split("").map((char, cIdx) => {
@@ -331,48 +331,64 @@ export default function App() {
         )}
       </div>
 
-      <div className="relative flex shadow-2xl rounded-b-lg overflow-hidden border-t-8 border-stone-800 bg-stone-800">
-        {/* White Keys */}
-        {WHITE_KEYS.map((note) => (
-          <motion.button
-            key={note}
-            id={`key-${note}`}
-            data-pitch={note}
-            whileTap={{ scaleY: 0.98, backgroundColor: "#f3f4f6" }}
-            onPointerDown={() => playNote(note)}
-            onPointerUp={() => stopNote(note)}
-            onPointerLeave={() => stopNote(note)}
-            className="relative w-12 h-64 bg-white border-r border-stone-200 last:border-r-0 flex flex-col justify-end items-center pb-4 transition-colors hover:bg-stone-50 group active:z-20"
-          >
-            <span className="text-[10px] font-bold text-stone-300 group-hover:text-stone-500 transition-colors uppercase tracking-tighter">
-              {note}
-            </span>
-          </motion.button>
-        ))}
-
-        {/* Black Keys */}
-        {BLACK_KEYS.map((key) => {
-          const whiteKeyIndex = WHITE_KEYS.indexOf(key.after);
-          const leftPosition = (whiteKeyIndex + 1) * 48 - 16;
-
-          return (
+      <div className="w-full max-w-4xl overflow-x-auto pb-6 cursor-grab active:cursor-grabbing no-scrollbar scroll-smooth">
+        <div className="md:hidden text-center text-[10px] text-stone-400 mb-2 animate-pulse">
+          ← 左右滑动查看更多琴键 →
+        </div>
+        <div className="relative flex shadow-2xl rounded-b-lg overflow-hidden border-t-8 border-stone-800 bg-stone-800 mx-auto w-fit min-w-full md:min-w-0">
+          {/* White Keys */}
+          {WHITE_KEYS.map((note) => (
             <motion.button
-              key={key.note}
-              id={`key-${key.note}`}
-              data-pitch={key.note}
-              whileTap={{ height: "155px", backgroundColor: "#1a1a1a" }}
-              onPointerDown={() => playNote(key.note)}
-              onPointerUp={() => stopNote(key.note)}
-              onPointerLeave={() => stopNote(key.note)}
-              style={{ left: `${leftPosition}px` }}
-              className="absolute top-0 w-8 h-40 bg-stone-900 rounded-b-md z-10 shadow-lg border-x border-stone-800 flex flex-col justify-end items-center pb-3 transition-colors hover:bg-stone-800 group active:z-30"
+              key={note}
+              id={`key-${note}`}
+              data-pitch={note}
+              whileTap={{ scaleY: 0.98, backgroundColor: "#f3f4f6" }}
+              onPointerDown={(e) => { e.preventDefault(); playNote(note); }}
+              onPointerUp={(e) => { e.preventDefault(); stopNote(note); }}
+              onPointerLeave={(e) => { e.preventDefault(); stopNote(note); }}
+              className="relative w-10 md:w-12 h-48 md:h-64 bg-white border-r border-stone-200 last:border-r-0 flex flex-col justify-end items-center pb-4 transition-colors hover:bg-stone-50 group active:z-20 shrink-0 touch-none"
             >
-              <span className="text-[8px] font-bold text-stone-600 group-hover:text-stone-400 transition-colors uppercase">
-                {key.note}
+              <span className="text-[9px] md:text-[10px] font-bold text-stone-300 group-hover:text-stone-500 transition-colors uppercase tracking-tighter">
+                {note}
               </span>
             </motion.button>
-          );
-        })}
+          ))}
+
+          {/* Black Keys */}
+          {BLACK_KEYS.map((key) => {
+            const whiteKeyIndex = WHITE_KEYS.indexOf(key.after);
+            const keyWidth = typeof window !== 'undefined' && window.innerWidth < 768 ? 40 : 48;
+            const blackKeyWidth = typeof window !== 'undefined' && window.innerWidth < 768 ? 24 : 32;
+            const leftOffset = typeof window !== 'undefined' && window.innerWidth < 768 ? 12 : 16;
+            
+            // Using CSS variables or fixed values that match the responsive classes
+            // w-10 = 40px, w-12 = 48px
+            // We'll use a more robust approach with calc in style
+            const leftPosition = `calc(${(whiteKeyIndex + 1)} * var(--key-w) - var(--black-key-offset))`;
+
+            return (
+              <motion.button
+                key={key.note}
+                id={`key-${key.note}`}
+                data-pitch={key.note}
+                whileTap={{ height: "110px", backgroundColor: "#1a1a1a" }}
+                onPointerDown={(e) => { e.preventDefault(); playNote(key.note); }}
+                onPointerUp={(e) => { e.preventDefault(); stopNote(key.note); }}
+                onPointerLeave={(e) => { e.preventDefault(); stopNote(key.note); }}
+                style={{ 
+                  left: leftPosition,
+                  '--key-w': '48px',
+                  '--black-key-offset': '16px'
+                } as any}
+                className="absolute top-0 w-8 h-28 md:h-40 bg-stone-900 rounded-b-md z-10 shadow-lg border-x border-stone-800 flex flex-col justify-end items-center pb-3 transition-colors hover:bg-stone-800 group active:z-30 md:[--key-w:48px] md:[--black-key-offset:16px] max-md:[--key-w:40px] max-md:[--black-key-offset:12px] touch-none"
+              >
+                <span className="text-[7px] md:text-[8px] font-bold text-stone-600 group-hover:text-stone-400 transition-colors uppercase">
+                  {key.note}
+                </span>
+              </motion.button>
+            );
+          })}
+        </div>
       </div>
 
       <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl">
