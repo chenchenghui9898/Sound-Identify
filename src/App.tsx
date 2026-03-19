@@ -87,9 +87,10 @@ export default function App() {
     const totalScore = Math.round(pitchScore * 0.6 + durationScore * 0.4);
 
     let evaluation = "";
-    if (totalScore >= 90) evaluation = "完美！";
+    if (totalScore >= 100) evaluation = "天下第一辨音奇才！";
+    else if (totalScore >= 90) evaluation = "完美！";
     else if (totalScore >= 70) evaluation = "不错！";
-    else evaluation = "再试试";
+    else evaluation = "再试试吧～";
 
     return { totalScore, evaluation };
   };
@@ -213,7 +214,7 @@ export default function App() {
     <div className="min-h-screen bg-stone-100 flex flex-col items-center justify-center p-8 font-sans select-none">
       <audio 
         ref={songAudioRef} 
-        src="/风从草原来.mp3" 
+        src="/wind_from_grass.mp3" 
         onTimeUpdate={onTimeUpdate} 
         onEnded={onSongEnded}
       />
