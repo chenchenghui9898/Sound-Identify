@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from "motion/react";
 import { Music, Volume2, Target, Trophy, Play, Pause, RotateCcw } from "lucide-react";
 import { useRef, useEffect, useState, useMemo } from "react";
-import windFromGrass from "./assets/wind_from_grass.mp3";
+// import windFromGrass from "./assets/wind_from_grass.mp3";
+const windFromGrass = "/wind_from_grass.mp3";
 
 const WHITE_KEYS = [
   "C4", "D4", "E4", "F4", "G4", "A4", "B4",
@@ -218,6 +219,13 @@ export default function App() {
         src={windFromGrass} 
         onTimeUpdate={onTimeUpdate} 
         onEnded={onSongEnded}
+        onError={(e) => {
+          const target = e.target as HTMLAudioElement;
+          console.error("Audio error:", target.error);
+          console.error("Audio src:", target.src);
+        }}
+        onCanPlayThrough={() => console.log("Audio can play through")}
+        preload="auto"
       />
 
       <div className="mb-8 text-center">
